@@ -32,23 +32,39 @@ void add(FCirc *f, int valor) {
 }
 
 int remove(FCirc *f) {
-    
-}
+    if (f->tam == 0) {
+        printf("fila vazia\n");
+        return 0;
+    }
+    printf("%d\n", f->data[f->inicio]);
+    f->inicio = (f->inicio + 1) % f->cap;
+    f->tam--;
+} // CONFERIR 
 
-void increase(FCirc *f, int k) {
-
-}
-
-int listar(FCirc *f) {
-
-}
-
-void print(FCirc *f) {
+void increase(FCirc *f, int k) { // FAZER
 
 }
 
-void end() {
+int listar(FCirc *f) { // FAZER
+
+}
+
+void print(FCirc *f) { // FAZER
+
+}
+
+void end(FCirc *f) { // RODAR
+    free(FCir->data);
+    free(FCirc);
     break;
+}
+
+int main() {
+    scanf("%s", comando);
+
+
+
+    return 0;
 }
 
 int main() {
