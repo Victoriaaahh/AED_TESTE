@@ -4,92 +4,93 @@
 
 typedef struct {
     int *data;
-    int capacidade;
+    int cap;
     int inicio;
     int fim;
-    int tamanho;
-} FilaCircular;
+    int tam;
+} FCirc;
 
-void inicializarFila(FilaCircular *f, int capacidade) {
-    f->data = (int *)malloc(capacidade * sizeof(int));
-    f->capacidade = capacidade;
+void init_Fila(FCirc *f, int cap) {
+    f->data = (int *)malloc(cap * sizeof(int));
+    f->cap = cap;
     f->inicio = 0;
     f->fim = 0;
-    f->tamanho = 0;
+    f->tam = 0;
 }
+void increase(FCirc *fila) {
+    int novaCap = fila->cap + 5;
+    int *novo = (int *)malloc(novaCap * sizeof(int));
 
-void add(FilaCircular *f, int valor) {
-    if (f->tamanho == f->capacidade) {
-        // fila cheia: substitui o mais antigo
-        f->data[f->fim] = valor;
-        f->fim = (f->fim + 1) % f->capacidade;
-        f->inicio = (f->inicio + 1) % f->capacidade; // anda o início
-    } else {
-        f->data[f->fim] = valor;
-        f->fim = (f->fim + 1) % f->capacidade;
-        f->tamanho++;
+    for (int i = 0; i < fila->tam; i++) {
+        novo[i] = fila->data[(fila->inicio + i) % fila->cap];
     }
+
+    free(fila->data);
+    fila->data = novo;
+    fila->cap = novaCap;
+    fila->inicio = 0;
+    fila->fim = fila->tam;
 }
 
-void remover(FilaCircular *f) {
-    if (f->tamanho == 0) {
+
+void add(FCirc *fila, int valor) {
+    if (fila->tam == fila->cap) {
+        increase(fila);
+    }
+    
+    fila->data[fila->fim] = valor;
+    fila->fim = (fila->fim + 1) % fila->cap;
+    fila->tam++;
+}
+
+void remover(FCirc *fila) {
+    if (fila->tam == 0) {
         printf("fila vazia\n");
         return;
     }
-    printf("%d\n", f->data[f->inicio]);
-    f->inicio = (f->inicio + 1) % f->capacidade;
-    f->tamanho--;
+    printf("%d\n", fila->data[fila->inicio]);
+    fila->inicio = (fila->inicio + 1) % fila->cap;
+    fila->tam--;
 }
 
-void list(FilaCircular *f) {
-    if (f->tamanho == 0) {
+void listar(FCirc *fila) {
+    if (fila->tam == 0) {
         printf("\n");
         return;
     }
-    int i = f->inicio;
-    for (int count = 0; count < f->tamanho; count++) {
-        printf("%d", f->data[i]);
-        if (count < f->tamanho - 1)
+    int i = fila->inicio;
+    for (int count = 0; count < fila->tam; count++) {
+        printf("%d", fila->data[i]);
+        if (count < fila->tam - 1)
             printf(" ");
-        i = (i + 1) % f->capacidade;
+        i = (i + 1) % fila->cap;
     }
     printf("\n");
 }
 
-void printFila(FilaCircular *f) {
-    for (int i = 0; i < f->capacidade; i++) {
-        int pos = (f->inicio + i) % f->capacidade;
-        if (i < f->tamanho)
-            printf("%d ", f->data[pos]);
+void print(FCirc *fila) {
+    for (int i = 0; i < fila->cap; i++) {
+        int pos = (fila->inicio + i) % fila->cap;
+        if (i < fila->tam)
+            printf("%d ", fila->data[pos]);
         else
             printf("- ");
     }
     printf("\n");
 }
 
-void increase(FilaCircular *f, int k) {
-    int novaCap = f->capacidade + k;
-    int *novo = (int *)malloc(novaCap * sizeof(int));
-
-    // copiar dados atuais na ordem correta
-    for (int i = 0; i < f->tamanho; i++) {
-        novo[i] = f->data[(f->inicio + i) % f->capacidade];
-    }
-
-    free(f->data);
-    f->data = novo;
-    f->capacidade = novaCap;
-    f->inicio = 0;
-    f->fim = f->tamanho;
+void end(FCirc *fila) {
+    free(fila->data);
 }
 
+
 int main() {
-    FilaCircular fila;
+    FCirc fila;
     int k;
     char comando[20];
 
     scanf("%d", &k);
-    inicializarFila(&fila, k);
+    init_Fila(&fila, k);
 
     while (1) {
         scanf("%s", comando);
@@ -103,21 +104,19 @@ int main() {
             remover(&fila);
         } 
         else if (strcmp(comando, "LIST") == 0) {
-            list(&fila);
+            listar(&fila);
         } 
         else if (strcmp(comando, "PRINT") == 0) {
-            printFila(&fila);
+            print(&fila);
         } 
         else if (strcmp(comando, "INCREASE") == 0) {
-            int k;
-            scanf("%d", &k);
-            increase(&fila, k);
+            increase(&fila);
         } 
         else if (strcmp(comando, "END") == 0) {
             break;
         }
     }
 
-    free(fila.data);
+    end(&fila);
     return 0;
 }
